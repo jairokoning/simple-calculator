@@ -5,33 +5,30 @@ function App() {
   const [calculatorOutput, setCalculatorOutput] = useState('0')
   const [currentNumber, setCurrentNumber] = useState('');
   const [firstNumber, setFirstNumber] = useState('');
-  const [calculatorIsShowingFinalResult, setCalculatorIsShowingFinalResul] = useState(false);
-  //const [secondNumber, setSecondNumber] = useState('');
+  const [calculatorIsShowingFinalResult, setCalculatorIsShowingFinalResul] = useState(false);  
   const [selectedOperator, setSelectedOperator] = useState('');
-  // const [firstNumberHasDot, setFirstNumberHasDot] = useState(false);
-  // const [secondNumberHasDot, setSecondNumberHasDot] = useState(false);
-  // const [calcResult, setCalcResult] = useState<number | null>(null);
-  //const numbers = ['0','1','2','3','4','5','6','7','8','9'];
-  //const calcOperators = ['+'];
-
-  const handleNumberClick = (clickedNumberValue: string) => {
-
-    
-    // if (selectedOperator === null) {
-    //   if (firstNumber === null && clickedNumberValue === 0) return false;      
-    //   setFirstNumber(Number(`${Number(firstNumber)}${Number(clickedNumberValue)}`));
-    // } else {
-    //   if (secondNumber === null && clickedNumberValue === 0) return false;
-    //   setSecondNumber(Number(`${Number(secondNumber)}${Number(clickedNumberValue)}`));
-    // }
+  const [calculatorOutputFontSizeClass, setCalculatorOutputFontSizeClass] = useState('calculator__output__font-size__xl')
+  
+  const handleNumberClick = (clickedNumberValue: string) => {    
+    if (currentNumber.length >=27) {
+      setCalculatorOutput('ERROR: VERY LONG NUMBER');
+      setCalculatorIsShowingFinalResul(true);      
+      setCurrentNumber('')
+      handleOutputFontSize(23);
+      return false;
+    }
     if (calculatorOutput === '0' || calculatorIsShowingFinalResult) {
       setCalculatorOutput(clickedNumberValue);
+      handleOutputFontSize(1);
       setCalculatorIsShowingFinalResul(false);
     } else {
-      setCalculatorOutput(calculatorOutput + clickedNumberValue);
+      setCalculatorOutput((currentState) => {
+        const newState = currentState + clickedNumberValue
+        handleOutputFontSize(newState.length);
+        return newState;        
+      });      
     }
-    setCurrentNumber(currentNumber + clickedNumberValue);
-    //setCalculatorOutput(`${firstNumber}${selectedOperator}${secondNumber}`)    
+    setCurrentNumber(currentNumber + clickedNumberValue);    
   }
 
   const handleOperatorClick = (operatorValue: string) => {
@@ -39,21 +36,29 @@ function App() {
       setSelectedOperator(operatorValue);
       setFirstNumber(currentNumber);
       setCurrentNumber('');
-      setCalculatorOutput(`${calculatorOutput}${operatorValue}`);
+      setCalculatorOutput((currentState) => {
+        const newState = currentState + operatorValue;
+        handleOutputFontSize(newState.length);
+        return newState;        
+      });
     }
   }
 
   const handleDotClick = () => {
-    if (currentNumber !== '' && !currentNumber.includes('.')) {
+    if (!currentNumber.includes('.')) {
       setCurrentNumber(currentNumber + '.');
-      setCalculatorOutput(`${calculatorOutput}.`);
+      setCalculatorOutput((currentState) => {
+        const newState = currentState + '.';
+        handleOutputFontSize(newState.length);
+        return newState;        
+      });
     }
   }
 
   const handleEnterClick = () => {    
     if (firstNumber !== '' && currentNumber !== '') {
       let result = 0;
-      console.log(`${firstNumber} ${selectedOperator} ${currentNumber}`)
+      let isError = false;     
       switch (selectedOperator) {
         case "+":
           result = Number(firstNumber) + Number(currentNumber);                    
@@ -68,14 +73,21 @@ function App() {
           result = Number(firstNumber) / Number(currentNumber);
           break;
         default:
-          setCalculatorOutput('ERROR');
+          isError = true;
           break;
       }
-      setCalculatorOutput(result.toString());          
+               
       setCalculatorIsShowingFinalResul(true);
       setFirstNumber('');
       setCurrentNumber('');
       setSelectedOperator('');
+      if (isError) {
+        setCalculatorOutput('ERROR: UNDEFINED OPERATOR');
+        handleOutputFontSize(25);
+      } else {
+        setCalculatorOutput(result.toString()); 
+        handleOutputFontSize(result.toString().length);
+      }
     }
   }
 
@@ -85,13 +97,29 @@ function App() {
     setSelectedOperator('');
     setFirstNumber('');
     setCurrentNumber('');
+    handleOutputFontSize(0);
+  }
+
+  const handleOutputFontSize = (outputLength: number) => {
+    if (outputLength < 7 && calculatorOutputFontSizeClass !== 'calculator__output__font-size__xl') {
+      setCalculatorOutputFontSizeClass('calculator__output__font-size__xl')
+    }
+    if (outputLength > 7 && outputLength < 9 && calculatorOutputFontSizeClass !== 'calculator__output__font-size__lg') {
+      setCalculatorOutputFontSizeClass('calculator__output__font-size__lg')
+    }
+    if (outputLength > 9 && outputLength < 13 && calculatorOutputFontSizeClass !== 'calculator__output__font-size__md') {
+      setCalculatorOutputFontSizeClass('calculator__output__font-size__md')
+    }
+    if (outputLength > 13 && calculatorOutputFontSizeClass !== 'calculator__output__font-size__sm') {      
+      setCalculatorOutputFontSizeClass('calculator__output__font-size__sm')
+    }
   }
 
   return (
     <>      
       <h1>Simple Calculator</h1>
       <div className="calculator">
-        <div className="calculator__output">{calculatorOutput}</div>
+        <div className={"calculator__output " + calculatorOutputFontSizeClass}>{calculatorOutput}</div>
         <div className="calculator__keys">
           <button className="calculator__key calculator__key--operator" onClick={() => handleOperatorClick("+")}>+</button>
           <button className="calculator__key calculator__key--operator" onClick={() => handleOperatorClick("-")}>-</button>
