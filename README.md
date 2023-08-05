@@ -29,4 +29,4 @@ This project was developed with the following technologies:
    ```
 ---
 
-_Developed with_ 😀 _and_ ♥ _by [Jairo Koning](https://linkedin/in/jairokoning)_
+_Developed with_ 😀 _and_ ❤️ _by [Jairo Koning](https://linkedin/in/jairokoning)_
