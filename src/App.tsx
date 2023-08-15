@@ -57,8 +57,8 @@ function App() {
 
   const handleEnterClick = () => {    
     if (firstNumber !== '' && currentNumber !== '') {
-      let result = 0;
-      let isError = false;     
+      let result = 0;      
+      let error = '';
       switch (selectedOperator) {
         case "+":
           result = Number(firstNumber) + Number(currentNumber);                    
@@ -70,10 +70,14 @@ function App() {
           result = Number(firstNumber) * Number(currentNumber);
           break;
         case "÷":
+          if (Number(currentNumber) === Number(0)) {            
+            error = 'Expression error';
+            break;
+          }
           result = Number(firstNumber) / Number(currentNumber);
           break;
         default:
-          isError = true;
+          error = 'ERROR: UNDEFINED OPERATOR';
           break;
       }
                
@@ -81,8 +85,9 @@ function App() {
       setFirstNumber('');
       setCurrentNumber('');
       setSelectedOperator('');
-      if (isError) {
-        setCalculatorOutput('ERROR: UNDEFINED OPERATOR');
+      if (error.length > 0) {
+        console.log(error)
+        setCalculatorOutput(error);
         handleOutputFontSize(25);
       } else {
         setCalculatorOutput(result.toString()); 
